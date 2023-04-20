@@ -1,13 +1,11 @@
-// 🦁 add useState import
-// import { useState } from "react";
+import { useState } from 'react';
 
 const App = () => {
-  // 🦁 Remplace le name par un state
-  let name = '';
+  const [name, setName] = useState('');
+  const [isNameReversed, setIsNameReversed] = useState(false);
 
   const handleChange = (event) => {
-    // 🦁 Update le state avec la nouvelle valeur
-    // 💡 `event.target.value`
+    setName(event.target.value);
   };
 
   return (
@@ -15,12 +13,27 @@ const App = () => {
       <input
         type="text"
         placeholder="Name"
-        // 🦁 Ajoute la valeur
-        // 🦁 Ajoute le onChange pour update le state quand la valeur change
+        value={name}
+        onChange={handleChange}
       />
-      <p>{name ? `Hello ${name}` : 'Write your name'}</p>
+      <input
+        type="checkbox"
+        checked={isNameReversed}
+        onChange={(event) => {
+          setIsNameReversed(event.target.checked);
+        }}
+      />
+      <Name name={name} isNameReversed={isNameReversed} />
     </div>
   );
+};
+
+const Name = ({ name, isNameReversed }) => {
+  if (!name) {
+    return 'Write your name';
+  }
+
+  return `Hello ${isNameReversed ? name.split('').reverse().join('') : name}`;
 };
 
 export default App;
