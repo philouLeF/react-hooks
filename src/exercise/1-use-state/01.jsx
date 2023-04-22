@@ -3,9 +3,11 @@ import { useState } from 'react';
 const App = () => {
   const [name, setName] = useState('');
   const [isNameReversed, setIsNameReversed] = useState(false);
+  const [nameHistory, setNameHistory] = useState([]);
 
   const handleChange = (event) => {
     setName(event.target.value);
+    setNameHistory((current) => [...current, event.target.value]);
   };
 
   return (
@@ -24,6 +26,11 @@ const App = () => {
         }}
       />
       <Name name={name} isNameReversed={isNameReversed} />
+      <ul>
+        {nameHistory.map((name, i) => (
+          <li key={i}>{name}</li>
+        ))}
+      </ul>
     </div>
   );
 };
