@@ -1,13 +1,32 @@
 import { useState } from 'react';
 
+const useStateHistory = () => {
+  const [history, setHistory] = useState([]);
+
+  const addHistory = (value = '-') => {
+    setHistory((prev) => [...prev, value]);
+  };
+
+  const deleteHistory = (index) => {
+    if (typeof index !== 'number') return;
+
+    setHistory((current) => {
+      current.splice(index, 1);
+      return [...current];
+    });
+  };
+
+  return { history, addHistory, deleteHistory };
+};
+
 const App = () => {
   const [name, setName] = useState('');
   const [isNameReversed, setIsNameReversed] = useState(false);
-  const [nameHistory, setNameHistory] = useState([]);
+  const { history, addHistory, deleteHistory } = useStateHistory();
 
   const handleChange = (event) => {
     setName(event.target.value);
-    setNameHistory((current) => [...current, event.target.value]);
+    addHistory(event.target.value);
   };
 
   return (
@@ -27,8 +46,10 @@ const App = () => {
       />
       <Name name={name} isNameReversed={isNameReversed} />
       <ul>
-        {nameHistory.map((name, i) => (
-          <li key={i}>{name}</li>
+        {history.map((name, index) => (
+          <li key={index} onClick={() => deleteHistory(index)}>
+            {name}
+          </li>
         ))}
       </ul>
     </div>
