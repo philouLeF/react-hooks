@@ -1,21 +1,39 @@
 import clsx from 'clsx';
-import { useReducer, useState } from 'react';
+import { useReducer, useState, createContext, useContext } from 'react';
 
-// 🦁 Crée un ThemeContext en utilisant `React.createContext`
+const ThemeContext = createContext(null);
 
-// 🦁 Crée un ThemeProvider qui fait :
-//  - `const [theme, setTheme] = useState('light');`
-//  - fonction pour toggle le theme (dark => light et light => dark)
-//  - fonction pour set le theme en light
-//  - fonction pour set le theme en dark
-//  - constante pour savoir si le thème est dark
-//  - constante pour savoir si le thème est light
-//  - définit une variables `values` qui contient toggle, setLight, setDark, isDark, isLight, theme
-//  - retourne le `ThemeContext.Provider` avec `values` en props
-//  - 💡 value={values}
+const useThemeContext = () => {
+  const context = useContext(ThemeContext);
 
-const ThemedLayout = ({ children, isDark }) => {
-  // 🦁 Supprime la props et remplace par le context en utilisant React.useContext de ThemeContext
+  if (context === null) {
+    throw new Error('useThemeContext must be used inside a ThemeProvider');
+  }
+
+  return context;
+};
+
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('light');
+
+  const toggle = () =>
+    setTheme((curr) => (curr === 'light' ? 'dark' : 'light'));
+  const setDark = () => setTheme('dark');
+  const setLight = () => setTheme('light');
+
+  const isDark = theme === 'dark';
+  const islight = theme === 'light';
+
+  const values = { theme, toggle, setDark, setLight, isDark, islight };
+
+  return (
+    <ThemeContext.Provider value={values}>{children}</ThemeContext.Provider>
+  );
+};
+
+const ThemedLayout = ({ children }) => {
+  const { isDark } = useThemeContext();
+
   return (
     <div className={clsx('theme-app', { 'dark-theme-app': isDark })}>
       {children}
@@ -23,23 +41,27 @@ const ThemedLayout = ({ children, isDark }) => {
   );
 };
 
-const ForceLightMode = ({ setLight }) => {
-  // 🦁 Supprime la props et remplace par le context en utilisant React.useContext de ThemeContext
+const ForceLightMode = () => {
+  const { setLight } = useThemeContext();
+
   return <button onClick={() => setLight()}>Force light</button>;
 };
 
-const ForceDarkMode = ({ setDark }) => {
-  // 🦁 Supprime la props et remplace par le context en utilisant React.useContext de ThemeContext
+const ForceDarkMode = () => {
+  const { setDark } = useThemeContext();
+
   return <button onClick={() => setDark()}>Force dark</button>;
 };
 
-const ToggleMode = ({ toggle, isDark }) => {
-  // 🦁 Supprime la props et remplace par le context en utilisant React.useContext de ThemeContext
+const ToggleMode = () => {
+  const { toggle, isDark } = useThemeContext();
+
   return <button onClick={toggle}>{isDark ? '🌞' : '🌙'}</button>;
 };
 
-const CurrentModeInfo = ({ theme }) => {
-  // 🦁 Supprime la props et remplace par le context en utilisant React.useContext de ThemeContext
+const CurrentModeInfo = () => {
+  const { theme } = useThemeContext();
+
   return (
     <div>
       Current theme: <b>{theme}</b>
@@ -47,40 +69,35 @@ const CurrentModeInfo = ({ theme }) => {
   );
 };
 
-const ForceThemeButtons = ({ setTheme }) => (
+const ForceThemeButtons = () => (
   <div style={{ marginTop: 32 }}>
-    {/* 🦁 Enlever les props */}
-    <ForceLightMode setLight={() => setTheme('light')} />
-    <ForceDarkMode setDark={() => setTheme('dark')} />
+    <ForceLightMode />
+    <ForceDarkMode />
   </div>
 );
 
 const App = () => {
   const [count, increment] = useReducer((curr) => curr + 1, 0);
-  const [theme, setTheme] = useState('light');
 
   return (
     <div>
       <p>Not in dark mode</p>
       <button onClick={increment}>{count}</button>
-      <ThemedLayout isDark={theme === 'dark'}>
-        <ToggleMode
-          toggle={() =>
-            setTheme((curr) => (curr === 'light' ? 'dark' : 'light'))
-          }
-          isDark={theme === 'dark'}
-        />
+      <ThemeProvider>
+        <ThemedLayout>
+          <ToggleMode />
 
-        <h1>Articles</h1>
-        <h3>What is useContext ?</h3>
-        <p>
-          useContext is used to pass data through the component tree without
-          having to pass props down manually at every level.
-        </p>
-        <hr />
-        <CurrentModeInfo theme={theme} />
-        <ForceThemeButtons setTheme={setTheme} />
-      </ThemedLayout>
+          <h1>Articles</h1>
+          <h3>What is useContext ?</h3>
+          <p>
+            useContext is used to pass data through the component tree without
+            having to pass props down manually at every level.
+          </p>
+          <hr />
+          <CurrentModeInfo />
+          <ForceThemeButtons />
+        </ThemedLayout>
+      </ThemeProvider>
     </div>
   );
 };
