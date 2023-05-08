@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useOnRenderStyle } from '../../toolbox/hooks/useOnRenderStyle.jsx';
 
 const User = ({ user }) => {
   return (
     <div>
-      <Name name={user.name} />
-      <Age age={user.age} />
+      <NameMemo name={user.name} />
+      <AgeMemo age={user.age} />
     </div>
   );
 };
@@ -19,6 +19,8 @@ const Name = ({ name }) => {
   );
 };
 
+const NameMemo = memo(Name);
+
 const Age = ({ age }) => {
   const ref = useOnRenderStyle();
   return (
@@ -27,6 +29,8 @@ const Age = ({ age }) => {
     </p>
   );
 };
+
+const AgeMemo = memo(Age);
 
 const App = () => {
   const [user, setUser] = useState({ name: 'Jean', age: '14' });

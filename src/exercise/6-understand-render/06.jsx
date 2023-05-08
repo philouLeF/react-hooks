@@ -11,6 +11,12 @@ const Header = () => {
   );
 };
 
+const Counter = () => {
+  const [count, increment] = useReducer((v) => v + 1, 0);
+
+  return <button onClick={() => increment()}>{count}</button>;
+};
+
 const Footer = () => {
   const ref = useOnRenderStyle();
   return (
@@ -22,13 +28,10 @@ const Footer = () => {
 };
 
 const App = () => {
-  // 🦁 Crée un composant "Counter" et déplace la logique et le bouton dedans.
-  const [count, increment] = useReducer((v) => v + 1, 0);
-
   return (
     <div>
       <Header />
-      <button onClick={() => increment()}>{count}</button>
+      <Counter />
       <Footer />
     </div>
   );

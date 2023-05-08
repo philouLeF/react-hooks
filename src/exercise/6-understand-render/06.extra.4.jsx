@@ -11,21 +11,28 @@ const SmallComponentTop = () => {
   );
 };
 
-const App = () => {
+const ScrollCounter = ({ children, topChildren }) => {
   const [scroll, setScroll] = useState(0);
-  return (
-    <div
-      style={{ overflowY: 'scroll', height: '500px', paddingTop: '200px' }}
-      onScroll={(e) => {
-        setScroll(e.target.scrollTop);
-      }}
-    >
-      <div style={{ height: '800px' }}>
-        <SmallComponentTop />
-        <p style={{ width: 'fit-content' }}>Hey, you scroll {scroll}</p>
-        <ExpensiveComponent />
-      </div>
+  <div
+    style={{ overflowY: 'scroll', height: '500px', paddingTop: '200px' }}
+    onScroll={(e) => {
+      setScroll(e.target.scrollTop);
+    }}
+  >
+    {' '}
+    <div style={{ height: '800px' }}>
+      {topChildren}
+      <p style={{ width: 'fit-content' }}>Hey, you scroll {scroll}</p>
+      {children}
     </div>
+  </div>;
+};
+
+const App = () => {
+  return (
+    <ScrollCounter topChildren={<SmallComponentTop />}>
+      <ExpensiveComponent />
+    </ScrollCounter>
   );
 };
 
